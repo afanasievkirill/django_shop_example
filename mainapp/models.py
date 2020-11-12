@@ -8,8 +8,14 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
+from django.urls import reverse
 
 User = get_user_model()
+
+
+def get_product_url(obj,view_name):
+    ct_model = obj.__class__.meta.model_name
+    return reverse(view_name, kwargs={'ct_model': ct_model, 'slug': obj.slug})
 
 
 class MinResolutionErrorException(Exception):
@@ -104,6 +110,9 @@ class Notebook(Product):
     def __str__(self):
         return "{} : {}".format(self.category.name, self.title)
 
+    def get_absolute_url(self):
+        return get_product_url(self, 'product_detail')
+
 
 class Smartphone(Product):
     diagonal = models.CharField(max_length=255, verbose_name='Диагональ')
@@ -120,6 +129,9 @@ class Smartphone(Product):
 
     def __str__(self):
         return "{} : {}".format(self.category.name, self.title)
+
+    def get_absolute_url(self):
+        return get_product_url(self, 'product_detail')
 
 
 class CardProduct(models.Model):
